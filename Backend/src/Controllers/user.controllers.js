@@ -153,5 +153,20 @@ return res.status(200).clearCookie("accessToken",options).clearCookie("refreshTo
     console.log(error)
   }
 }
-
-export { registerUser,loginUser,logoutUser};
+const fetchProfile=async (req,res)=>{
+ const user = await axios.post(process.env.GRAPHQL_ENDPOINT,{
+  query:`query MyQuery {
+  users_by_pk(id: "${req.user.id}") {
+    balance
+    email
+    name
+  }
+}
+`},
+{headers:headers})
+if(!user){
+  return res.status(401).json({message:"User is not authenticated"})
+}
+return res.status(200).json(user.data.data.users_by_pk)
+}
+export { registerUser,loginUser,logoutUser,fetchProfile};
