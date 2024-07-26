@@ -73,6 +73,7 @@ const loginUser = async (req, res) => {
   try {
     const { email, password } = req.body;
     console.log(email);
+    console.log(password)
     if (!email || !password) {
       return res.status(401).json({ message: "Incomplete Credentials" });
     }
@@ -119,6 +120,9 @@ const loginUser = async (req, res) => {
         query: `mutation MyMutation {
     update_users_by_pk(pk_columns: {id: "${existingUser.data.data.users[0].id}"}, _set: {accessToken: "${accessToken}"}) {
       id
+      name
+      balance
+      email
     },
   }
   `,
@@ -135,7 +139,9 @@ const loginUser = async (req, res) => {
       .status(200)
       .cookie("accessToken", accessToken, options)
       .cookie("refreshToken", refreshToken, options)
-      .json({ messaage: "Logged In Successfully " });
+      .json({ messaage: "Logged In Successfully ",
+        data:updatedUser.data.data
+      });
   } catch (error) {
     console.log(error);
   }
@@ -254,6 +260,7 @@ const transactionHandler = async (req, res) => {
           return res.status(500).json({ messaage: "Transaction unsuccessful" });
         }
         //  fetch user2 current balance
+        console.log(transaction_receiver_id)
         variables.transaction_receiver_id = transaction_receiver_id;
         variables.balance = 0;
         const user2 = await axios.post(
@@ -269,7 +276,7 @@ const transactionHandler = async (req, res) => {
             headers: headers,
           }
         );
-        console.log(user2.data.data.users_by_pk.balance);
+        console.log(user2.data)
         balance = user2.data.data.users_by_pk.balance;
         balance += amount;
         console.log(balance);
@@ -350,13 +357,14 @@ const transactionHandler = async (req, res) => {
 };
 const fetchUser= async (req,res)=>{
   try {
-   const{email,name} = req.body;
-   if(!email || !name){
+   const{name} = req.body;
+   console.log(name)
+   if(!name){
     return res.status(401).json({messaage:"Incomplete Credentials"})
    }
    const searchedUserDetails= await axios.post(process.env.GRAPHQL_ENDPOINT,{
     query:`query MyQuery {
-  users(where: {email: {_eq: "${email}"}, _or: {name: {_eq: "${name}"}}}) {
+  users(where:{name: {_eq: "${name}"}}) {
     id
     email
     name
