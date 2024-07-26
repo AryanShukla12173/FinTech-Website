@@ -14,8 +14,7 @@ export default function Logout() {
 
   const logoutConfirmation = async () => {
     try {
-      axios.defaults.withCredentials=true;
-      const response = await axios.post('http://localhost:3000/api/v1/users/logout',{});
+      const response = await axios.get(`${import.meta.env.VITE_BACKEND_ENDPOINT}/logout`,{withCredentials:true});
       console.log(response.data);
       if (response.status === 200) {
         dispatch(logout());

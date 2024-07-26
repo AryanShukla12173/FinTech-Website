@@ -90,8 +90,8 @@ const loginUser = async (req, res) => {
       { headers: headers }
     );
     console.log(existingUser.data.data);
-    if (!existingUser) {
-      return res.status(500).json({ message: "Error in validation" });
+    if (existingUser.data.data.users.length==0) {
+      return res.status(401).json({ message: "User does not Exist" });
     }
     console.log(existingUser.data.data.users[0].password);
     const encryptedPass = existingUser.data.data.users[0].password;
@@ -225,6 +225,10 @@ const transactionHandler = async (req, res) => {
         headers: headers,
       }
     );
+    // Check if the issuer has the sufficient funds for transactions
+     if(issuerData.data.data.users_by_pk.balance<amount){
+      return res.status(401).json({message:"User has Insufficient Funds"})
+     }
     //  console.log(issuerData.data.data.users_by_pk.balance)
     balance = issuerData.data.data.users_by_pk.balance;
     console.log(balance);

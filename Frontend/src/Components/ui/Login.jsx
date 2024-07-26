@@ -10,7 +10,8 @@ import { Navigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import {Box} from "@mui/material";
 import { Link } from "react-router-dom";
-
+import { toast,ToastContainer,Bounce } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 export default function Login()
 {  const authStatus= useSelector((state)=>state.auth.status);
     console.log(authStatus);
@@ -27,19 +28,35 @@ export default function Login()
       const response = await axios.post(`${import.meta.env.VITE_BACKEND_ENDPOINT}/login`, data,{withCredentials:true});
       console.log(response.data.data.update_users_by_pk)
       const userData=response.data.data.update_users_by_pk
+      console.log(response.status)
       if (response.status === 200) {
       dispatch(login(userData));
-      useDispatch(login())
       }
       else {
          dispatch(logout())
       }
     } catch (error) {
+      toast("User is not Registered",{
+        position:"top-center"
+      })
       console.log(error);
       dispatch(logout())
     }
   };
-    return( 
+    return( <>
+    <ToastContainer
+        position="top-center"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="dark"
+        transition={Bounce}
+      />
     <Box component="form"  display="flex" flexDirection="column" gap={4} 
     alignItems="center" textAlign="center" minWidth="xs" maxWidth="sm" className=" m-auto bg-[#e0e0e0] relative top-32" onSubmit={handleSubmit(sendData)}padding={2} borderRadius={10} width="35vw">
     <Typography variant="h4" className="text-center">Sign In</Typography>
@@ -49,5 +66,6 @@ export default function Login()
     <Button variant="contained" className="w-1/4" type="submit" color="inherit">Sign In</Button>
     {authStatus &&(<Navigate to="/"/>)}
     </Box>
+    </>
     )
 }

@@ -4,12 +4,19 @@ import { useForm } from "react-hook-form";
 import { toast, ToastContainer, Bounce } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import axios from "axios";
-
+import { useSelector } from "react-redux";
 function Transaction() {
   const { register, handleSubmit } = useForm();
   const [user, setUser] = useState(null);
-
+  const userData = useSelector((state) => state.auth.userData);
+  console.log(userData)
   const sendData = async (data) => {
+    if(data.name===userData.name){
+      toast("User cannot search for itself pls search for another user",{
+        position:"top-center"
+      })
+      return 
+    }
     console.log(data);
     try {
       const response = await axios.post(
@@ -23,11 +30,14 @@ function Transaction() {
       if (response.status === 200 && response.data.success === true) {
         setUser(response.data.data);
       } else {
+         
         toast.error("User not found. Please check the name and try again.", {
           autoClose: 5000,
           position: "top-center",
         });
+        
       }
+     
     } catch (error) {
       toast.error("An error occurred while searching for the user", {
         autoClose: 5000,
@@ -60,6 +70,12 @@ function Transaction() {
           autoClose: 5000,
           position: "top-center",
         });
+        if(response.status===401){
+          toast.error("User has insufficient Funds", {
+            autoClose: 5000,
+            position: "top-center",
+          });
+        } 
       } else {
         toast.error("Transaction failed. Please try again or contact support.", {
           autoClose: 5000,
@@ -67,7 +83,7 @@ function Transaction() {
         });
       }
     } catch (error) {
-      toast.error("An error occurred during the transaction", {
+      toast.error("User does not have sufficient Funds", {
         autoClose: 5000,
         position: "top-center",
       });
