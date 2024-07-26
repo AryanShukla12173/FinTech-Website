@@ -16,4 +16,5 @@
  ## Design Decisions
  1) Assumption 1: Decided to use a dummy system to substitute for real beneficiaries or bank accounts and thus provide no way to link such accounts
  2) Assumption 2: Since banks or beneficiaries are not linked  it makes no sense to implement a withdrawal and deposit transactions for the user to perform on itself
+3) Assumption 3: The Net Banking function uses names of other users on the platform, there are better ways to implement this but because of time requirements I did not spend much time on designing the backend schemas to accomodate them.
 
