@@ -1,6 +1,6 @@
 # Steps for Setup of Project
 1) Use the sample env in the public directory located in both Frontend and Backend
-2) FIll the env variables with required values and place them in the root
+2) FIll the env variables with required values and place them in the root directory
 3) run `npm i` then  `npm run dev` on both Frontend and Backend
 ## Hasura PostgreSQL Table Schema Structure
  def users{<br/> 
