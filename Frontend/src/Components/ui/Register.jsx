@@ -1,122 +1,130 @@
-import React, { useState } from "react";
-import TextField from "@mui/material/TextField";
-import Button from "@mui/material/Button";
-import axios from "axios";
+import React from "react";
+import { TextField, Button, Typography, Box, Container, Link as MuiLink, useMediaQuery, useTheme } from "@mui/material";
 import { useForm } from "react-hook-form";
-import { Link, Typography } from "@mui/material";
-import { Box } from "@mui/material";
+import axios from "axios";
+import { Link } from "react-router-dom";
 import { toast, ToastContainer } from 'react-toastify';
-import "react-toastify/dist/ReactToastify.css";
+import 'react-toastify/dist/ReactToastify.css';
 
+const showToast = {
+  success: (message) => {
+    toast.success(message, {
+      icon: "🎉",
+      style: {
+        borderRadius: '10px',
+        background: '#333',
+        color: '#fff',
+      },
+    });
+  },
+  error: (message) => {
+    toast.error(message, {
+      icon: "❌",
+      style: {
+        borderRadius: '10px',
+        background: '#333',
+        color: '#fff',
+      },
+    });
+  },
+  // ... (include info and warn if needed)
+};
 
 export default function Register() {
   const { register, handleSubmit } = useForm();
-  const [data, setData] = useState({});
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
   const sendData = async (formData) => {
     try {
       const response = await axios.post(
         `${import.meta.env.VITE_BACKEND_ENDPOINT}/register`,
         formData,
-        {
-          withCredentials: true,
-        }
+        { withCredentials: true }
       );
-      console.log(response.data.message);
       if (response.status === 200) {
-        setData(response.data);
-        toast.success("Registered Successfully", {
-          position: 'top-center'
-        });
+        showToast.success("Registered Successfully");
       } else {
-        toast.error("Registration Unsuccessful", {
-          position: 'top-center'
-        });
+        showToast.error("Registration Unsuccessful");
       }
     } catch (error) {
-      console.log(error);
-      toast.error("Registration Failed", {
-        position: 'top-center'
-      });
+      showToast.error("Registration Failed");
+      console.error(error);
     }
   };
 
   return (
-    <>
-    <ToastContainer
-position="top-center"
-autoClose={5000}
-hideProgressBar={false}
-newestOnTop={false}
-closeOnClick
-rtl={false}
-pauseOnFocusLoss
-draggable
-pauseOnHover
-theme="dark"
-transition: Bounce
-/>
-    <Box
-      component="form"
-      display="flex"
-      flexDirection="column"
-      gap={3}
-      alignItems="center"
-      textAlign="center"
-      maxWidth="sm"
-      className="justify-center m-auto my-24 bg-[#e0e0e0]"
-      onSubmit={handleSubmit(sendData)}
-      padding={1}
-      borderRadius={3}
-      width={"33vw"}
-    >
-      <Typography variant="h4" alignSelf="center" className="">
-        Sign Up
-      </Typography>
-      <TextField
-        className="sm:w-1/2"
-        id="outlined-basic"
-        label="Full Name"
-        variant="outlined"
-        name="name"
-        required
-        {...register("name")}
+    <Container maxWidth="sm">
+      <ToastContainer
+        position="top-center"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="colored"
       />
-      <TextField
-        id="outlined-basic"
-        label="Email"
-        variant="outlined"
-        name="email"
-        type="text"
-        required
-        className="sm:w-1/2"
-        {...register("email")}
-      />
-      <TextField
-        id="outlined-basic"
-        label="Password"
-        variant="outlined"
-        name="password"
-        type="password"
-        required
-        className="sm:w-1/2"
-        {...register("password")}
-      />
-      <Button
-        variant="contained"
-        id="RegButton"
-        type="submit"
-        color="inherit"
+      <Box
+        component="form"
+        onSubmit={handleSubmit(sendData)}
+        sx={{
+          display: 'flex',
+          flexDirection: 'column',
+          gap: 3,
+          alignItems: 'center',
+          textAlign: 'center',
+          bgcolor: '#e0e0e0',
+          p: 4,
+          borderRadius: 2,
+          mt: { xs: 4, sm: 8 },
+          width: '100%',
+          maxWidth: '400px',
+          mx: 'auto'
+        }}
       >
-        Sign Up
-      </Button>
-      <Box component="div">
-        <Typography>
-          <Link href="/login">Already have an account? Sign In</Link>
+        <Typography variant="h4" component="h1">
+          Sign Up
+        </Typography>
+        <TextField
+          fullWidth
+          label="Full Name"
+          variant="outlined"
+          required
+          {...register("name")}
+        />
+        <TextField
+          fullWidth
+          label="Email"
+          variant="outlined"
+          type="email"
+          required
+          {...register("email")}
+        />
+        <TextField
+          fullWidth
+          label="Password"
+          variant="outlined"
+          type="password"
+          required
+          {...register("password")}
+        />
+        <Button
+          variant="contained"
+          type="submit"
+          color="primary"
+          fullWidth
+        >
+          Sign Up
+        </Button>
+        <Typography variant="body1">
+          <MuiLink component={Link} to="/login" underline="hover">
+            Already have an account? Sign In
+          </MuiLink>
         </Typography>
       </Box>
-      
-    </Box>
-    </>
+    </Container>
   );
 }
